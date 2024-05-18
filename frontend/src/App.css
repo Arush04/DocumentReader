@@ -51,9 +51,9 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  border-right: 1px solid #e0e0e0;
+  /* border-right: 1px solid #e0e0e0; */
   flex: 1;
-  margin-right: 800px;
+  margin-right: 1000px;
   /* Adjust margin-right as needed */
   margin-left: -10px;
   margin-bottom: 20px;
@@ -63,14 +63,37 @@
   font-size: 0.7rem
 }
 
-.welcomePage {
+.welcomePopup {
   position: fixed;
-  top: 30%;
+  top: 50%;
   left: 50%;
-  transform: translate(-30%, -40%);
+  transform: translate(-50%, -50%);
+  background-color: #5511ca;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(226, 10, 10, 0.1);
+  z-index: 9999;
   text-align: center;
+}
+
+.welcomeContent {
   font-family: 'Press Start 2P', cursive;
-  font-size: 1.5rem;
+}
+
+.closePopupBtn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.closePopupBtn:hover {
+  background-color: #45a049;
 }
 
 .fileLabel {
@@ -79,6 +102,14 @@
   font-size: 1.2rem;
   margin-right: 50px;
   transform: translate(-20%, -40%);
+}
+
+.fileLabel1 {
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  margin-right: 10px;
+  transform: translate(-10%, -40%);
 }
 
 .uploadBtn {
@@ -94,11 +125,6 @@
   font-family: 'Press Start 2P', cursive;
   transform: translate(-50%, -40%);
 }
-/* 
-.questionLabel {
-  font-weight: bold;
-  margin-bottom: 10px;
-} */
 
 .questionInput {
   margin-bottom: 20px;
@@ -136,11 +162,6 @@
   font-family: 'Press Start 2P', cursive;
   font-size: 0.7rem;
 }
-
-/* .heading {
-  text-align: center;
-  transform: translate(10%);
-} */
 
 .error-popup {
   position: fixed;
@@ -189,7 +210,16 @@ body {
   padding: 5px;
   margin-bottom: 20px;
   font-family: 'Press Start 2P', cursive;
-  font-size: 0.7rem
+  font-size: 0.7rem;
+  margin-right: 50px;
+}
+
+.fileInput1 {
+  padding: 5px;
+  margin-bottom: 20px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  margin-right: 160px;
 }
 
 .uploadBtn:hover {

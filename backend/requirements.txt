@@ -27,3 +27,9 @@ python-box
 sentence-transformers>=0.1.0
 langchain-community
 python-multipart
+torch
+torchvision
+torchaudio
+transformers
+pydub
+pytube

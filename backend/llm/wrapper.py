@@ -8,7 +8,11 @@ from langchain.vectorstores import FAISS
 from llm.prompts import qa_template
 from llm.llm import setup_llm
 import langchain_community
+import torch
 langchain_community.allow_dangerous_deserialization = True
+
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Import config vars
 with open('config.yml', 'r', encoding='utf8') as ymlfile:
@@ -28,7 +32,7 @@ def set_qa_prompt():
 
 def build_retrieval_qa_chain(llm, prompt):
     embeddings = HuggingFaceEmbeddings(model_name=cfg.EMBEDDINGS,
-                                       model_kwargs={'device': 'cpu'})
+                                       model_kwargs={'device': device})
     vectordb = FAISS.load_local(cfg.DB_FAISS_PATH, embeddings, allow_dangerous_deserialization=True)
     retriever = vectordb.as_retriever(search_kwargs={'k': cfg.VECTOR_COUNT})
 
@@ -50,7 +54,7 @@ def setup_qa_chain():
 
 def query_embeddings(query):
     embeddings = HuggingFaceEmbeddings(model_name=cfg.EMBEDDINGS,
-                                       model_kwargs={'device': 'cpu'})
+                                       model_kwargs={'device': device})
     vectordb = FAISS.load_local(cfg.DB_FAISS_PATH, embeddings, allow_dangerous_deserialization=True)
     retriever = vectordb.as_retriever(search_kwargs={'k': cfg.VECTOR_COUNT})
     semantic_search = retriever.get_relevant_documents(query)

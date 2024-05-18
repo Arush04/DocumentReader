@@ -9,6 +9,9 @@ export default function App() {
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [uploadError, setUploadError] = useState<string | undefined>();
   const [loading, setLoading] = useState(false); // State variable for loading
+  const [videoLink, setVideoLink] = useState<string>('');
+  const [showWelcomePopup, setShowWelcomePopup] = useState(true);
+
 
   const handleQuestionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(event.target.value);
@@ -23,7 +26,7 @@ export default function App() {
       const selectedFile = event.target.files[0];
       const acceptedFileTypes = [".pdf", ".txt", ".csv", ".docx"];
       const fileExtension = selectedFile.name.split(".").pop();
-      
+
       if (!acceptedFileTypes.includes(`.${fileExtension}`)) {
         setUploadError("Invalid file type. Please select a PDF, TXT, CSV, or DOCX file.");
         setFile(undefined); // Clear the file input
@@ -60,6 +63,43 @@ export default function App() {
     }
   };
 
+  const handleVideoLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVideoLink(e.target.value);
+  };
+
+  const handleVideoUpload = async () => {
+    if (!videoLink) {
+      console.error("Error: Video link is required.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:8000/transcribe_video", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ videoLink }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      console.log("Transcription Result:", data);
+
+      // Update state to display transcription result
+      setResult(data.map((chunk: Record<string, any>) => chunk.text).join('\n'))
+
+      setUploadSuccess(false);
+      setUploadError(undefined);
+    } catch (error) {
+      console.error("Error", error);
+      setUploadError("Error uploading video link. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -67,7 +107,7 @@ export default function App() {
       console.error("Error: File and question are required.");
       return;
     }
-    setUploadSuccess(false); 
+    setUploadSuccess(false);
     setLoading(true); // Set loading to true when starting prediction
     const formData = new FormData();
     formData.append("input_query", question);
@@ -87,13 +127,20 @@ export default function App() {
     }
   };
 
+  const closeWelcomePopup = () => {
+    setShowWelcomePopup(false);
+  };
+
   return (
     <div>
       <h1 className="heading">Pdf Tutor</h1>
-      {!uploadSuccess && !result && ( // Add condition for result
-        <div className="welcomePage">
-          <h1>Welcome🙏to Pdf Tutor</h1>
-          <p>Upload your file to get started</p>
+      {showWelcomePopup && (
+        <div className="welcomePopup">
+          <div className="welcomeContent">
+            <h1>Welcome🙏to Pdf Tutor</h1>
+            <p>Upload your file or video link to get started</p>
+            <button onClick={closeWelcomePopup} className="closePopupBtn">Close</button>
+          </div>
         </div>
       )}
       <div className="appBlock">
@@ -117,16 +164,38 @@ export default function App() {
               className="uploadBtn"
               type="button"
               onClick={handleUpload}
-              disabled={!file || loading} // Disable button when loading
+              disabled={!file || loading}
             >
-              {loading ? "Uploading..." : "Upload"} {/* Change button text when loading */}
+              {loading ? "Uploading..." : "Upload"}
+            </button>
+            <br />
+            <label className="fileLabel1" htmlFor="videoLink">
+              Upload a video or YouTube link:
+            </label>
+            <input
+              type="text"
+              id="videoLink"
+              name="videoLink"
+              value={videoLink}
+              onChange={handleVideoLinkChange}
+              placeholder="Enter video URL"
+              className="fileInput1"
+            />
+            <br />
+            <button
+              className="uploadBtn"
+              type="button"
+              onClick={handleVideoUpload}
+              disabled={!videoLink || loading}
+            >
+              {loading ? "Uploading..." : "Upload"}
             </button>
           </div>
 
           <div className="chatSection">
             <div className="resultOutput">
               <span style={{ fontSize: '2rem' }}>🤖</span>
-              {loading ? "Loading..." : result} {/* Show loading message */}
+              {loading ? "Loading..." : result}
             </div>
             <form onSubmit={handleSubmit} className="form">
               <label className="questionLabel" htmlFor="question">
@@ -140,7 +209,6 @@ export default function App() {
                 onChange={handleQuestionChange}
                 placeholder="Ask your question here"
               />
-
               <br />
               <label>
                 <input
@@ -154,9 +222,9 @@ export default function App() {
               <button
                 className="submitBtn"
                 type="submit"
-                disabled={!file || !question || loading} // Disable button when loading
+                disabled={!file || !question || loading}
               >
-                {loading ? "Loading..." : "Submit"} {/* Change button text when loading */}
+                {loading ? "Loading..." : "Submit"}
               </button>
             </form>
             <br />
