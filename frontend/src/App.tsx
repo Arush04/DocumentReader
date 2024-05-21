@@ -193,7 +193,7 @@ export default function App() {
           </div>
 
           <div className="chatSection">
-            <div className="resultOutput">
+            <div className="resultOutputBox">
               <span style={{ fontSize: '2rem' }}>🤖</span>
               {loading ? "Loading..." : result}
             </div>
@@ -229,6 +229,7 @@ export default function App() {
             </form>
             <br />
           </div>
+
         </div>
       </div>
     </div>
